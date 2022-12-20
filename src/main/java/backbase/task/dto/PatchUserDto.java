@@ -1,20 +1,23 @@
-//DTO class for retrieving users
+//DTO class for creating and updating users
 package backbase.task.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
-public class GetUserDto {
+public class PatchUserDto {
 
+    @Size(min = 2, max = 50, message = "length should be between 2-50 characters")
+    @JsonProperty("first_name")
     private String firstName;
 
+    @Size(min = 2, max = 50, message = "length should be between 2-50 characters")
+    @JsonProperty("last_name")
     private String lastName;
 
-    public GetUserDto() {
-    }
-
-    public GetUserDto(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public PatchUserDto() {
     }
 
     public String getFirstName() {
@@ -35,7 +38,7 @@ public class GetUserDto {
 
     @Override
     public String toString() {
-        return "GetUserDto{" +
+        return "CreateUserDto{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';
@@ -45,7 +48,7 @@ public class GetUserDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GetUserDto that = (GetUserDto) o;
+        PatchUserDto that = (PatchUserDto) o;
         return Objects.equals(firstName, that.firstName) && Objects.equals(lastName, that.lastName);
     }
 

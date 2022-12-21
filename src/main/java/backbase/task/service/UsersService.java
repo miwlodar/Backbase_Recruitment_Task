@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UsersService {
 
     private final UsersRepository usersRepository;
 
-    public UserService(UsersRepository usersRepository) {
+    public UsersService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
@@ -26,6 +26,10 @@ public class UserService {
 
     public Optional<User> findById(long id) {
         return usersRepository.findById(id);
+    }
+
+    public User save(User user) {
+        return usersRepository.save(user);
     }
 
     public Optional<User> update(long id, CreateUserDto updateUserDto) {
@@ -46,10 +50,6 @@ public class UserService {
             }
             return usersRepository.save(user);
         });
-    }
-
-    public User save(User user) {
-        return usersRepository.save(user);
     }
 
     public void deleteById(long id) {

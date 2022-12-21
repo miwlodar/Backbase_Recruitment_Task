@@ -4,7 +4,7 @@ import backbase.task.dto.CreateUserDto;
 import backbase.task.dto.PatchUserDto;
 import backbase.task.dto.UserDto;
 import backbase.task.entity.User;
-import backbase.task.service.UserService;
+import backbase.task.service.UsersService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,32 +20,41 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class UsersController {
 
-    private final UserService userService;
+    private final UsersService usersService;
 
-    public UsersController(UserService userService) {
-        this.userService = userService;
+    public UsersController(UsersService usersService) {
+        this.usersService = usersService;
     }
 
-    //exposing "/users" endpoint and returning list of all users (with Pageable interface - pagination and sorting)
-    //including users' IDs in returned JSON - needed for updating and deleting users
+    /**
+     * @return list of all users (with Pageable interface - enabling pagination and sorting)
+     * including users' IDs in returned JSON - needed for updating/patching and deleting users
+     */
     @GetMapping("/users")
-    public Page<UserDto> findAll(Pageable pageable) {
+    public ResponseEntity<Page<UserDto>> findAll(Pageable pageable) {
 
-        return userService
+        return ResponseEntity.ok(usersService
                 .findAll(pageable)
-                .map(user -> new UserDto(user.getId(), user.getFirstName(), user.getLastName()));
+                .map(user -> new UserDto(user.getId(), user.getFirstName(), user.getLastName())));
     }
 
-    //exposing "/users/{id}" and returning a user with requested id
+    /**
+     * @param id id of the requested user
+     * @return requested user
+     */
     @GetMapping("/users/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable(required = true) Long id) {
-        return userService.findById(id)
+        return usersService.findById(id)
                 .map(user -> ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    //mapping for 1st required endpoint (GET list of users with given last name)
-    //with duplicate name-surname pairs (as they represent different users - based on IDs)
+    /**
+     * mapping for 1st endpoint from the requirements
+     * @param lastName user's last name (by adding ?lastName={lastName} to the URL)
+     * @return list of users with requested last name
+     * with duplicate first and last name pairs (as they represent different users, based on IDs) - .distinct() may be uncommented to modify it
+     */
     @GetMapping("/users-by-lastname")
     public ResponseEntity<List<UserDto>> getUsersByLastName(@RequestParam(required = true) String lastName) {
 
@@ -53,7 +62,7 @@ public class UsersController {
             return ResponseEntity.ok(Collections.emptyList());
         }
 
-        final List<UserDto> users = userService.findByLastName(lastName)
+        final List<UserDto> users = usersService.findByLastName(lastName)
                 .stream()
                 .map(user -> new UserDto(user.getFirstName(), user.getLastName()))
                 //          .distinct()
@@ -62,7 +71,12 @@ public class UsersController {
         return ResponseEntity.ok(users);
     }
 
-    //mapping for 2nd required endpoint (GET list of names only for the given last name) - with distinct names for a given surname
+    /**
+     * mapping for 2nd endpoint from the requirements
+     * @param lastName user's last name (by adding ?lastName={lastName} to the URL)
+     * @return list of users' first names only for the given last name
+     * with distinct first names for a given last name - .distinct() may be commented out to modify it
+     */
     @GetMapping("/users-firstnames-by-lastname")
     public ResponseEntity<List<String>> getFirstNamesByLastName(@RequestParam(required = true) String lastName) {
 
@@ -70,7 +84,7 @@ public class UsersController {
             return ResponseEntity.ok(Collections.emptyList());
         }
 
-        final List<String> users = userService.findByLastName(lastName)
+        final List<String> users = usersService.findByLastName(lastName)
                 .stream()
                 .map(User::getFirstName)
                 .distinct()
@@ -79,45 +93,56 @@ public class UsersController {
         return ResponseEntity.ok(users);
     }
 
-    // mapping for 3rd required endpoint (POST - adding a new user) - allowing duplicate records in DB (with different IDs)
+    /**
+     * mapping for 3rd endpoint from the requirements (with duplicate first and last name pairs (with different IDs) allowed in DB)
+     * @param newUser user's first name and last name
+     * @return added user
+     */
     @PostMapping("/users")
-    public UserDto addUser(@RequestBody @Valid CreateUserDto newUser) {
+    public ResponseEntity<UserDto> addUser(@RequestBody @Valid CreateUserDto newUser) {
 
-        final User user = userService.save(new User(newUser.getFirstName(), newUser.getLastName()));
+        final User user = usersService.save(new User(newUser.getFirstName(), newUser.getLastName()));
 
-        return new UserDto(user.getId(), user.getFirstName(), user.getLastName());
+        return ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName()));
     }
 
-    // mapping for PUT /users/{id} - update existing user (requires providing all the user's fields)
+    /**
+     * @param updatedUser user's id, first name and last name (requires providing all user's fields)
+     * @return updated user
+     */
     @PutMapping("/users/{id}")
     public ResponseEntity<UserDto> updateUser(@RequestBody @Valid CreateUserDto updatedUser, @PathVariable Long id) {
 
-        return userService.update(id, updatedUser)
+        return usersService.update(id, updatedUser)
                 .map(user -> ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // mapping for PATCH /users/{id} - update existing user (doesn't require providing all the user's fields)
+    /**
+     * @param updatedUser user's id, first name and last name (doesn't require providing all the user's fields)
+     * @return patched user
+     */
     @PatchMapping("/users/{id}")
     public ResponseEntity<UserDto> patchUser(@RequestBody @Valid PatchUserDto updatedUser, @PathVariable Long id) {
 
-        return userService.patch(id, updatedUser)
+        return usersService.patch(id, updatedUser)
                 .map(user -> ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
-
     }
 
-    // mapping for DELETE /users/{id}
+    /**
+     * @param id id of the user to delete
+     */
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
 
-        final Optional<User> userToDelete = userService.findById(id);
+        final Optional<User> userToDelete = usersService.findById(id);
 
         if (userToDelete.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        userService.deleteById(id);
+        usersService.deleteById(id);
 
         return ResponseEntity.ok().build();
     }

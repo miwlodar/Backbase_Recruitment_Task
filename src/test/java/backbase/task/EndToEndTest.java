@@ -1,3 +1,5 @@
+package backbase.task;
+
 import backbase.task.dto.UserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +50,7 @@ public class EndToEndTest {
     UserDto userDTO4 = new UserDto("Chuck", "Norris");
 
     @Test
-    @DisplayName("\"api/users-by-lastname\" endpoint retrieves correct users for an existing lastName")
+    @DisplayName("\"api/users-by-lastname\" endpoint retrieves correct users")
     public void shouldRetrieveUsersByLastName() {
         //when
         ResponseEntity<List<UserDto>> users = testRestTemplate.exchange("http://localhost:" + port + "/api/users-by-lastname?lastName=Nowak", HttpMethod.GET, null, new ParameterizedTypeReference<List<UserDto>>() {
@@ -68,7 +70,7 @@ public class EndToEndTest {
     }
 
     @Test
-    @DisplayName("\"api/users-by-lastname\" endpoint retrieves an empty list for a non-existing lastName")
+    @DisplayName("\"api/users-by-lastname\" endpoint retrieves correct users")
     public void shouldProperlyHandleNonExistingLastName() {
         //when
         ResponseEntity<List<UserDto>> users = testRestTemplate.exchange("http://localhost:" + port + "/api/users-by-lastname?lastName=Nonexisting", HttpMethod.GET, null, new ParameterizedTypeReference<List<UserDto>>() {
@@ -80,7 +82,7 @@ public class EndToEndTest {
     }
 
     @Test
-    @DisplayName("\"api/users-by-lastname\" endpoint retrieves an empty list for empty lastName")
+    @DisplayName("\"api/users-by-lastname\" endpoint retrieves correct users")
     public void shouldProperlyHandleEmptyLastName() {
         //when
         ResponseEntity<List<UserDto>> users = testRestTemplate.exchange("http://localhost:" + port + "/api/users-by-lastname?lastName=", HttpMethod.GET, null, new ParameterizedTypeReference<List<UserDto>>() {
@@ -92,7 +94,7 @@ public class EndToEndTest {
     }
 
     @Test
-    @DisplayName("\"api/users-by-lastname\" endpoint returns BAD REQUEST lastName is not provided")
+    @DisplayName("\"api/users-by-lastname\" endpoint retrieves correct users")
     public void shouldProperlyHandleNotProvidedLastName() {
         //when
         ResponseEntity<Object> users = testRestTemplate.exchange("http://localhost:" + port + "/api/users-by-lastname", HttpMethod.GET, null, Object.class);

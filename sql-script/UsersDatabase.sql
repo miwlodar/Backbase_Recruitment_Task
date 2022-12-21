@@ -24,6 +24,4 @@ VALUES
 ('Jane','Doe'),
 ('John','Smith'),
 ('Jane','Smith'),
-('Tom','Smith'),
-('Jan', 'Kowalski'),
 ('Jan', 'Kowalski');

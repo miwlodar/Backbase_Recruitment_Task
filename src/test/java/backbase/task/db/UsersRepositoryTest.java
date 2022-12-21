@@ -1,10 +1,7 @@
 package backbase.task.db;
 
 import backbase.task.entity.User;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
@@ -19,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UsersRepositoryTest {
 
     @Autowired
@@ -41,6 +39,7 @@ class UsersRepositoryTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Method findAll works properly")
     void shouldFindAllUsers() throws Exception {
         Page<User> retrievedPage = usersRepository.findAll(PageRequest.of(0, 20, Sort.unsorted()));
@@ -60,6 +59,7 @@ class UsersRepositoryTest {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Method findByLastNameIgnoreCase works properly")
     void shouldFindUsersByLastName() throws Exception {
         User retrievedUser = usersRepository.findByLastNameIgnoreCase("Nowak").get(0);

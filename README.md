@@ -35,8 +35,7 @@ Usage examples with the responses based on the seed database records
 
 1. Get all users
     ```shell script
-    curl -X GET \
-      http://localhost:8080/api/users
+    curl -X GET http://localhost:8080/api/users
     ```
    Response:
 ```shell script
@@ -71,8 +70,7 @@ Usage examples with the responses based on the seed database records
 
 2. Get user with ID 1
     ```shell script
-    curl -X GET \
-      http://localhost:8080/api/users/1
+    curl -X GET http://localhost:8080/api/users/1
     ```
    Response:
 ```shell script
@@ -85,8 +83,7 @@ Usage examples with the responses based on the seed database records
 
 3. Get users with last name Doe
     ```shell script
-    curl -X GET \
-      http://localhost:8080/api/users-by-lastname?lastName=doe
+    curl -X GET http://localhost:8080/api/users-by-lastname?lastName=doe
     ```
    Response:
 ```shell script
@@ -104,8 +101,7 @@ Usage examples with the responses based on the seed database records
 
 4. Get users' first names with last name Doe
     ```shell script
-    curl -X GET \
-      http://localhost:8080/api/users-firstnames-by-lastname?lastName=doe
+    curl -X GET http://localhost:8080/api/users-firstnames-by-lastname?lastName=doe
     ```
    Response:
 ```shell script
@@ -173,8 +169,7 @@ Usage examples with the responses based on the seed database records
 
 8. Delete user with ID 5
     ```shell script
-    curl -X DELETE \
-      http://localhost:8080/api/users/5
+    curl -X DELETE http://localhost:8080/api/users/5
     ```
    Response:
 ```shell script

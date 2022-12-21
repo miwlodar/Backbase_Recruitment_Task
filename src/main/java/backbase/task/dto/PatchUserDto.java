@@ -1,4 +1,4 @@
-//DTO class for creating and updating users
+//DTO class for patching users
 package backbase.task.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

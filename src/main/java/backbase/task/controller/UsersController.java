@@ -26,14 +26,22 @@ public class UsersController {
         this.userService = userService;
     }
 
-    // exposing "/users" endpoint and returning list of all users (with Pageable interface - pagination and sorting)
-    // including users' IDs in returned JSON - needed for updating and deleting users
+    //exposing "/users" endpoint and returning list of all users (with Pageable interface - pagination and sorting)
+    //including users' IDs in returned JSON - needed for updating and deleting users
     @GetMapping("/users")
     public Page<UserDto> findAll(Pageable pageable) {
 
         return userService
                 .findAll(pageable)
                 .map(user -> new UserDto(user.getId(), user.getFirstName(), user.getLastName()));
+    }
+
+    //exposing "/users/{id}" and returning a user with requested id
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserDto> findById(@PathVariable(required = true) Long id) {
+        return userService.findById(id)
+                .map(user -> ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName())))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     //mapping for 1st required endpoint (GET list of users with given last name)
@@ -84,45 +92,14 @@ public class UsersController {
     @PutMapping("/users/{id}")
     public ResponseEntity<UserDto> updateUser(@RequestBody @Valid CreateUserDto updatedUser, @PathVariable Long id) {
 
-//        final Optional<User> userToUpdate = userService.findById(id);
-
-//        if (userToUpdate.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-
         return userService.update(id, updatedUser)
                 .map(user -> ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
-
-//        User user = userToUpdate.get();
-//        user.setFirstName(updatedUser.getFirstName());
-//        user.setLastName(updatedUser.getLastName());
-//
-//        userService.save(user);
-//        return ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName()));
     }
 
     // mapping for PATCH /users/{id} - update existing user (doesn't require providing all the user's fields)
     @PatchMapping("/users/{id}")
     public ResponseEntity<UserDto> patchUser(@RequestBody @Valid PatchUserDto updatedUser, @PathVariable Long id) {
-
-//        final Optional<User> userToUpdate = userService.findById(id);
-//
-//        if (userToUpdate.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        User user = userToUpdate.get();
-//
-//        if (updatedUser.getFirstName() != null) {
-//            user.setFirstName(updatedUser.getFirstName());
-//        }
-//        if (updatedUser.getLastName() != null) {
-//            user.setLastName(updatedUser.getLastName());
-//        }
-//
-//        userService.save(user);
-//        return ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName()));
 
         return userService.patch(id, updatedUser)
                 .map(user -> ResponseEntity.ok(new UserDto(user.getId(), user.getFirstName(), user.getLastName())))

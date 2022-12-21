@@ -22,6 +22,11 @@ public class CreateUserDto {
     public CreateUserDto() {
     }
 
+    public CreateUserDto(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public String getFirstName() {
         return firstName;
     }
